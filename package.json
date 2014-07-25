@@ -1,11 +1,11 @@
 {
   "name": "gulp-cachebust",
   "description": "Generates checksums and renames references to files, useful for cachebusting",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "author": "Josiah <josiah@web-dev.com.au>",
   "repository": "git@github.com:Josiah/gulp-cachebust.git",
   "dependencies": {
-    "through2": "~0.4.1",
-    "gulp-util": "~2.2.14"
+    "through2": "^0.5.1",
+    "gulp-util": "^3.0.0"
   }
 }

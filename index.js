@@ -102,7 +102,7 @@ CacheBuster.prototype.references = function references() {
             var original = mappings[i].original;
             var cachebusted = mappings[i].cachebusted;
 
-            contents = contents.replace(new RegExp(original, 'g'), cachebusted);
+            contents = contents.replace(new RegExp('\\b' + original + '\\b', 'g'), cachebusted);
         }
 
         file.contents = new Buffer(contents, encoding);

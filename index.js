@@ -24,6 +24,7 @@ CacheBuster.prototype.getChecksum = function getChecksum(file) {
 
     if (file.isStream()) {
         file.pipe(hash);
+        hash.end();
     }
 
     if (file.isBuffer()) {

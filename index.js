@@ -2,6 +2,7 @@ var crypto = require('crypto');
 var through2 = require('through2');
 var gutil = require('gulp-util');
 var path = require('path');
+var slash = require('slash');
 var PluginError = gutil.PluginError;
 
 module.exports = CacheBuster;
@@ -45,7 +46,8 @@ CacheBuster.prototype.getBustedPath = function getBustedPath(file) {
     var basename = path.basename(file.path, extname);
     var dirname = path.dirname(file.path);
 
-    return path.join(dirname, basename + '.' + checksum + extname);
+    var str = path.join(dirname, basename + '.' + checksum + extname);
+    return slash(str);
 };
 
 CacheBuster.prototype.getRelativeMappings = function getRelativeMappings() {
@@ -71,10 +73,10 @@ CacheBuster.prototype.resources = function resources() {
             return callback();
         }
 
-        var original = file.relative;
+        var original = slash(file.relative);
         file.path = bustedPath;
 
-        cachebuster.mappings[original] = file.relative;
+        cachebuster.mappings[original] = slash(file.relative);
 
         this.push(file);
         return callback();

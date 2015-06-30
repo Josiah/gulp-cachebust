@@ -48,6 +48,15 @@ gulp.task('build-html', ['build-css'], function () {
 Type: `Number`
 Default: 8
 
+#### options.token
+
+*Optional*
+
+Type: `String`
+Default: {token}
+
+Replaces token in original filename, unless such is missing in the string. By default checksum token is appended before extension, ex. `vendors.{token}.min.js` converts to `vendors.aabbccdd.min.js`, instead of `vendors.min.aabbccdd.js`.
+
 ### CacheBuster.resources()
 
 Renames and collects resources according to their MD5 checksum.
@@ -56,6 +65,10 @@ Renames and collects resources according to their MD5 checksum.
 
 Rewrites references to resources which have been renamed according to their MD5
 checksum.
+
+### CacheBuster.getHashMap(file)
+
+Returns collection (or single object, if file specified) of tokens of affected files. Ex.: `[{ 'vendors.{token}.min.js': 'aabbccdd' }, ...]`.
 
 ## License
 

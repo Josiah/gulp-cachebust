@@ -12,6 +12,8 @@ function CacheBuster(options) {
         return new CacheBuster(options);
     }
 
+    this.hashmap = {};
+    this.token = (options && options.token) || '{token}';
     this.checksumLength = (options && options.checksumLength) || 8;
     this.mappings = {};
 }
@@ -32,7 +34,10 @@ CacheBuster.prototype.getChecksum = function getChecksum(file) {
         hash.end(file.contents);
     }
 
-    return hash.read().toString('hex').substr(0, this.checksumLength);
+    var h = hash.read().toString('hex').substr(0, this.checksumLength);
+    var b = path.basename(file.path);
+    this.hashmap[b] = h;
+    return h;
 }
 
 CacheBuster.prototype.getBustedPath = function getBustedPath(file) {
@@ -46,8 +51,21 @@ CacheBuster.prototype.getBustedPath = function getBustedPath(file) {
     var basename = path.basename(file.path, extname);
     var dirname = path.dirname(file.path);
 
-    var str = path.join(dirname, basename + '.' + checksum + extname);
+    var token = this.token;
+    var base = basename.indexOf(token)
+        ? basename.replace(token, '.' + checksum)
+        : basename + '.' + checksum
+    ;
+
+    var str = path.join(dirname, base + extname);
     return slash(str);
+};
+
+CacheBuster.prototype.getHashMap = function getHashMap(file) {
+    if (file) {
+        return this.hashmap[file]
+    }
+    return this.hashmap;
 };
 
 CacheBuster.prototype.getRelativeMappings = function getRelativeMappings() {

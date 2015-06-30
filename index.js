@@ -12,16 +12,10 @@ function CacheBuster(options) {
         return new CacheBuster(options);
     }
 
+    this.hashmap = {};
+    this.token = (options && options.token) || '{token}';
     this.checksumLength = (options && options.checksumLength) || 8;
     this.mappings = {};
-    this.hashmap = {};
-}
-
-CacheBuster.prototype.getHashMap = function getHashMap(file) {
-    if (file) {
-        return this.hashmap[file]
-    }
-    return this.hashmap;
 }
 
 CacheBuster.prototype.getChecksum = function getChecksum(file) {
@@ -57,13 +51,21 @@ CacheBuster.prototype.getBustedPath = function getBustedPath(file) {
     var basename = path.basename(file.path, extname);
     var dirname = path.dirname(file.path);
 
-    var base = basename.indexOf('{md5}')
-        ? basename.replace('{md5}', '.' + checksum)
+    var token = this.token;
+    var base = basename.indexOf(token)
+        ? basename.replace(token, '.' + checksum)
         : basename + '.' + checksum
     ;
 
     var str = path.join(dirname, base + extname);
     return slash(str);
+};
+
+CacheBuster.prototype.getHashMap = function getHashMap(file) {
+    if (file) {
+        return this.hashmap[file]
+    }
+    return this.hashmap;
 };
 
 CacheBuster.prototype.getRelativeMappings = function getRelativeMappings() {

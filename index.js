@@ -13,6 +13,12 @@ function CacheBuster(options) {
     }
 
     this.checksumLength = (options && options.checksumLength) || 8;
+    this.random = (options && options.random) || false;
+    if (this.random) {
+        var shasum = crypto.createHash('sha1');
+        shasum.update(crypto.randomBytes(50).toString());
+        this.hash =  shasum.digest('hex').substr(0, this.checksumLength);
+    }
     this.mappings = {};
 }
 
@@ -36,7 +42,7 @@ CacheBuster.prototype.getChecksum = function getChecksum(file) {
 }
 
 CacheBuster.prototype.getBustedPath = function getBustedPath(file) {
-    var checksum = this.getChecksum(file);
+    var checksum = this.random ? this.hash : this.getChecksum(file);
 
     if (!checksum) {
         return file.path;

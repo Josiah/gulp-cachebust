@@ -48,6 +48,16 @@ gulp.task('build-html', ['build-css'], function () {
 Type: `Number`
 Default: 8
 
+#### options.random
+
+Generates the checksum based on a random sha1 hash and not on the file contents.  
+Useful for changing the file names on each deploy regardless if the content was changed or not.  
+
+*Optional*  
+
+Type: `Boolean`
+Default: false
+
 ### CacheBuster.resources()
 
 Renames and collects resources according to their MD5 checksum.

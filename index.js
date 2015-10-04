@@ -19,6 +19,11 @@ function CacheBuster(options) {
         shasum.update(crypto.randomBytes(50).toString());
         this.hash =  shasum.digest('hex').substr(0, this.checksumLength);
     }
+
+    this.pathFormatter = options && options.pathFormatter ? options.pathFormatter : function(dirname, basename, extname, checksum) {
+        return path.join(dirname, basename + '.' + checksum + extname);
+    };
+
     this.mappings = {};
 }
 
@@ -52,8 +57,7 @@ CacheBuster.prototype.getBustedPath = function getBustedPath(file) {
     var basename = path.basename(file.path, extname);
     var dirname = path.dirname(file.path);
 
-    var str = path.join(dirname, basename + '.' + checksum + extname);
-    return slash(str);
+    return slash(this.pathFormatter(dirname, basename, extname, checksum));
 };
 
 CacheBuster.prototype.getRelativeMappings = function getRelativeMappings() {

@@ -1,6 +1,7 @@
+/*jshint mocha:true, expr: true */
 var CacheBuster = require('../index');
 var File = require('vinyl');
-var ReadableStream = require('stream').Readable
+var ReadableStream = require('stream').Readable;
 var expect = require('chai').expect;
 
 function createBufferFile(filename, content) {
@@ -41,8 +42,6 @@ describe('checksum generator', function () {
             var file2 = createBufferFile('file2', 'content2');
             var checksum1 = bust.getChecksum(file1);
             var checksum2 = bust.getChecksum(file2);
-            //console.log('checksum1: ' + checksum1);
-            //console.log('checksum2: ' + checksum2);
             // Sanity checks
             expect(file1.isBuffer()).to.be.true;
             expect(file2.isBuffer()).to.be.true;
@@ -59,8 +58,6 @@ describe('checksum generator', function () {
             var file2 = createStreamFile('file2', 'content2');
             var checksum1 = bust.getChecksum(file1);
             var checksum2 = bust.getChecksum(file2);
-            //console.log('checksum1: ' + checksum1);
-            //console.log('checksum2: ' + checksum2);
             // Sanity checks
             expect(file1.isBuffer()).to.be.false;
             expect(file2.isBuffer()).to.be.false;

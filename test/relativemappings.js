@@ -1,3 +1,4 @@
+/*jshint mocha:true, expr: true */
 var CacheBuster = require('../index');
 var File = require('vinyl');
 var expect = require('chai').expect;
@@ -11,7 +12,6 @@ describe('relative mappings', function () {
     });
 
     it('should convert the mappmings hash to an array of objects', function () {
-        debugger
         bust.mappings = {
             orig1: 'busted1',
             orig2: 'busted2',

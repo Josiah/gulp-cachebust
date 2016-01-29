@@ -58,6 +58,26 @@ Useful for changing the file names on each deploy regardless if the content was 
 Type: `Boolean`
 Default: false
 
+#### options.pathFormatter
+
+Specify a custom formatting function for busted paths. The default will output
+filenames like `/path/to/basename.[hash].ext`.
+
+*Optional*
+
+Type: `Function`
+Default: null
+
+An example for outputing a custom hash prefix:
+
+```js
+{
+    pathFormatter: function(dirname, basename, extname, checksum) {
+        return require('path').join(dirname, basename + '._v' + checksum + extname);
+    }
+}
+```
+
 ### CacheBuster.resources()
 
 Renames and collects resources according to their MD5 checksum.

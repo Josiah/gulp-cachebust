@@ -100,9 +100,9 @@ CacheBuster.prototype.references = function references() {
 
 
         var relativeRegex = null;
-        var pathComponents = path.parse(file);
-        if(pathComponents && pathComponents.dir){
-            relativeRegex = new RegExp(pathComponent.dir, 'g');
+        var pathComponents = path.parse(file.relative);
+        if(pathComponents && pathComponents.dir && pathComponents.dir!==""){
+            relativeRegex = new RegExp(pathComponents.dir, 'g');
         }
 
         var mappings = cachebuster.getRelativeMappings(file.path);

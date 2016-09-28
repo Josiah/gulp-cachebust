@@ -110,10 +110,24 @@ CacheBuster.prototype.references = function references() {
 
         var contents = file.contents.toString(encoding);
 
+
+        var relativeRegex = null;
+        var pathComponents = path.parse(file.relative);
+        if(pathComponents && pathComponents.dir && pathComponents.dir!==""){
+            relativeRegex = new RegExp(pathComponents.dir, 'g');
+        }
+
         var mappings = cachebuster.getRelativeMappings(file.path);
         for (var i=0; i < mappings.length; i++) {
             var original = mappings[i].original;
             var cachebusted = mappings[i].cachebusted;
+
+            //if the contents is on a sub path, and the mapping is relative from there,
+            //we need to remove the subpath of the file being mapped, since it will not match the resource
+            if(relativeRegex){
+                original = original.replace(relativeRegex, "");
+                cachebusted = cachebusted.replace(relativeRegex, "");
+            }
 
             contents = contents.replace(new RegExp('\\b' + original + '(?!\\.)\\b', 'g'), cachebusted);
         }

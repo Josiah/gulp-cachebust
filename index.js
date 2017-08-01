@@ -24,14 +24,17 @@ function CacheBuster(options) {
         return path.join(dirname, basename + '.' + checksum + extname);
     };
 
-    this.mappings = {};
+    this.mappings = {
+        baseDir: null,
+        values: {}
+    };
 }
 
 CacheBuster.prototype.getChecksum = function getChecksum(file) {
     var hash = crypto.createHash('md5');
 
     if (file.isNull()) {
-        return; 
+        return;
     }
 
     if (file.isStream()) {
@@ -60,13 +63,16 @@ CacheBuster.prototype.getBustedPath = function getBustedPath(file) {
     return slash(this.pathFormatter(dirname, basename, extname, checksum));
 };
 
-CacheBuster.prototype.getRelativeMappings = function getRelativeMappings() {
+CacheBuster.prototype.getRelativeMappings = function getRelativeMappings(relativePath) {
     var mappings = [];
 
-    for (var original in this.mappings) {
-        var cachebusted = this.mappings[original];
+    for (var original in this.mappings.values) {
+        var cachebusted = this.mappings.values[original];
 
-        mappings.push({original: original, cachebusted: cachebusted});
+        mappings.push({
+            original: path.relative(relativePath, path.join(this.mappings.baseDir, original)),
+            cachebusted: path.relative(relativePath, path.join(this.mappings.baseDir, cachebusted))
+        });
     }
 
     return mappings;
@@ -78,6 +84,10 @@ CacheBuster.prototype.resources = function resources() {
     return through2.obj(function transform(file, encoding, callback) {
         var bustedPath = cachebuster.getBustedPath(file);
 
+        if (cachebuster.mappings.baseDir === null) {
+            cachebuster.mappings.baseDir = file.base;
+        }
+
         if (file.path === bustedPath) {
             this.push(file);
             return callback();
@@ -86,14 +96,14 @@ CacheBuster.prototype.resources = function resources() {
         var original = slash(file.relative);
         file.path = bustedPath;
 
-        cachebuster.mappings[original] = slash(file.relative);
+        cachebuster.mappings.values[original] = slash(file.relative);
 
         this.push(file);
         return callback();
     });
 };
 
-CacheBuster.prototype.references = function references() {
+CacheBuster.prototype.references = function references(basePath) {
     var cachebuster = this;
 
     return through2.obj(function transform(file, encoding, callback) {
@@ -109,13 +119,12 @@ CacheBuster.prototype.references = function references() {
         }
 
         var contents = file.contents.toString(encoding);
-
-        var mappings = cachebuster.getRelativeMappings(file.path);
+        var mappings = cachebuster.getRelativeMappings(file.dirname);
         for (var i=0; i < mappings.length; i++) {
             var original = mappings[i].original;
             var cachebusted = mappings[i].cachebusted;
 
-            contents = contents.replace(new RegExp('\\b' + original + '(?!\\.)\\b', 'g'), cachebusted);
+            contents = contents.replace(new RegExp('(["\'])' + original + '(?!\\.)\\b', 'g'), "$1" + cachebusted);
         }
 
         file.contents = new Buffer(contents, encoding);
